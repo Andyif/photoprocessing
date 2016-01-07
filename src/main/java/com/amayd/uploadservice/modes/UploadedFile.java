@@ -11,12 +11,14 @@ public class UploadedFile {
     @GeneratedValue
     private Long id;
     private String name;
+    private String location;
 
     public UploadedFile() {
     }
 
-    public UploadedFile(String name) {
+    public UploadedFile(String name, String location) {
         this.name = name;
+        this.location = location;
     }
 
     public Long getId() {
@@ -33,5 +35,13 @@ public class UploadedFile {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 }
