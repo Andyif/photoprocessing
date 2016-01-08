@@ -16,8 +16,7 @@ public class UploadedFile {
     public UploadedFile() {
     }
 
-    public UploadedFile(String name, String location) {
-        this.name = name;
+    public UploadedFile( String location){
         this.location = location;
     }
 
