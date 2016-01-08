@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.time.Instant;
 
 public class ProcessImage {
-    public static synchronized BufferedImage createResizedCopy(Image originalImage,
+    public static BufferedImage createResizedCopy(Image originalImage,
                                                   int scaledWidth, int scaledHeight,
                                                   boolean preserveAlpha)
     {
@@ -25,14 +25,16 @@ public class ProcessImage {
         return scaledBI;
     }
 
-    public static synchronized String saveImage(BufferedImage outputBufferedImage){
+    public static String saveImage(BufferedImage outputBufferedImage){
         System.out.println("saving an image" + Thread.currentThread().getName());
 
-        File outputfile = new File("C:/Users/Andy_/Desktop/" + Instant.now().getEpochSecond() + "_" + outputBufferedImage.getHeight() + ".gif");
+        File desktop = new File(System.getProperty("user.home"), "Desktop");
+
+        File outputfile = new File(desktop.getAbsolutePath() + "/" + Instant.now().getEpochSecond() + "_" + outputBufferedImage.getHeight() + ".png");
         String path = outputfile.getAbsolutePath().replace("\\", "/");
 
         try {
-            ImageIO.write(outputBufferedImage, "gif", outputfile);
+            ImageIO.write(outputBufferedImage, "png", outputfile);
         } catch (IOException e) {
             e.printStackTrace();
         }
