@@ -15,11 +15,16 @@
     <div class="jumbotron">
         <form th:action="@{/upload}" method="post" enctype="multipart/form-data" >
             <input name="fileToUpload" type="file"/>
-            <input type="submit" value="Add skill"/>
+            <input type="submit" value="Upload image"/>
         </form>
     </div>
-<div>
-    <p th:text="${info}"></p>
-</div>
+    <div>
+        <p th:text="${info}"></p>
+    </div>
+    <div class="jumbotron">
+        <form th:action="@{/upload/status}" method="get" enctype="multipart/form-data" >
+            <input type="submit" value="Get status"/>
+        </form>
+    </div>
 </body>
 </html>

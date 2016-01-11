@@ -21,14 +21,32 @@ public class ThreadExecutor {
         List<Callable<String>> callables = Arrays.asList(
                 () -> {
                     BufferedImage bufferedImage = ProcessImage.createResizedCopy(inputBufferedImage, newHeight, newWidth, isTransparant);
+                    Thread.sleep(5000);
                     return ProcessImage.saveImage(bufferedImage);
                 },
                 () -> {
                     BufferedImage bufferedImage = ProcessImage.createResizedCopy(inputBufferedImage, newHeight * 2, newWidth * 2, isTransparant);
+                    Thread.sleep(5000);
                     return ProcessImage.saveImage(bufferedImage);
                 },
                 () -> {
                     BufferedImage bufferedImage = ProcessImage.createResizedCopy(inputBufferedImage, newHeight * 3, newWidth * 3, isTransparant);
+                    Thread.sleep(5000);
+                    return ProcessImage.saveImage(bufferedImage);
+                },
+                () -> {
+                    BufferedImage bufferedImage = ProcessImage.createResizedCopy(inputBufferedImage, newHeight * 4, newWidth * 4, isTransparant);
+                    Thread.sleep(5000);
+                    return ProcessImage.saveImage(bufferedImage);
+                },
+                () -> {
+                    BufferedImage bufferedImage = ProcessImage.createResizedCopy(inputBufferedImage, newHeight * 5, newWidth * 5, isTransparant);
+                    Thread.sleep(5000);
+                    return ProcessImage.saveImage(bufferedImage);
+                },
+                () -> {
+                    BufferedImage bufferedImage = ProcessImage.createResizedCopy(inputBufferedImage, newHeight * 6, newWidth * 6, isTransparant);
+                    Thread.sleep(5000);
                     return ProcessImage.saveImage(bufferedImage);
                 }
         );
