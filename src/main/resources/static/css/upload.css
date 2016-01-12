@@ -1,0 +1,10 @@
+.fixed_image {
+    width: 540px;
+    height: 400px;
+}
+
+#preview {
+    width: 640px;
+    height: 480px;
+    margin: auto;
+}

@@ -13,3 +13,9 @@ function validateDevForm() {
          return false;
      }
  }
+
+ function previewImg(img){
+    var location = img.src;
+    element = document.getElementById("preview");
+    element.setAttribute("style", "background-image: url(" + location + ")");
+ }
