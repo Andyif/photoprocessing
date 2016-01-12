@@ -1,6 +1,5 @@
 package com.amayd.uploadservice.service;
 
-import com.amayd.uploadservice.tools.ProcessImage;
 import com.amayd.uploadservice.tools.ThreadExecutor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -8,10 +7,8 @@ import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -19,13 +16,13 @@ import java.util.concurrent.Future;
 public class ResizeImageService {
 
     @Async
-    public Future<List<String>> changeSize (InputStream inputStream, int newHeight, int newWidth, boolean isTransparant){
+    public Future<List<String>> changeSize(final InputStream inputStream, int newHeight, int newWidth, boolean isTransparent) {
 
-        BufferedImage inputBufferedImage = null;
+        BufferedImage inputBufferedImage;
         List<String> images = null;
         try {
             inputBufferedImage = ImageIO.read(inputStream);
-            images = ThreadExecutor.resizeImagesConcurrently(inputBufferedImage, newHeight, newWidth, isTransparant);
+            images = ThreadExecutor.resizeImagesConcurrently(inputBufferedImage, newHeight, newWidth, isTransparent);
         } catch (IOException e) {
             e.printStackTrace();
         }
