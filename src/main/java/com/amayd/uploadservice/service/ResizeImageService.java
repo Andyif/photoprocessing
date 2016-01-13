@@ -1,6 +1,9 @@
 package com.amayd.uploadservice.service;
 
+import com.amayd.uploadservice.modes.UploadedFile;
+import com.amayd.uploadservice.repository.FileRepository;
 import com.amayd.uploadservice.tools.ThreadExecutor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
@@ -15,8 +18,13 @@ import java.util.concurrent.Future;
 @Service
 public class ResizeImageService {
 
+    @Autowired
+    private FileRepository fileRepository;
+
     @Async
-    public Future<List<String>> changeSize(final InputStream inputStream, int newHeight, int newWidth, boolean isTransparent) {
+    public Future<String> changeSize(final InputStream inputStream, int newHeight, int newWidth, boolean isTransparent) {
+
+        final String result;
 
         BufferedImage inputBufferedImage;
         List<String> images = null;
@@ -26,7 +34,14 @@ public class ResizeImageService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return new AsyncResult<>(images);
+
+        result = saveToDB(images);
+        return new AsyncResult<>(result);
+    }
+
+    private String saveToDB(List<String> locations){
+        locations.stream().forEach( newImageLocation -> fileRepository.save(new UploadedFile(newImageLocation)));
+        return "done";
     }
 
 }

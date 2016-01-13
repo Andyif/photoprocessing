@@ -16,7 +16,7 @@ public class IndexController {
 
     @RequestMapping(method = GET)
     public String indexPage(){
-        logger.info("printing from Index controller");
+        logger.debug("printing from Index controller");
         return "redirect:/upload";
     }
 }

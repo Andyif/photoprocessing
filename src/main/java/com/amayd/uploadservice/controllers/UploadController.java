@@ -13,7 +13,10 @@ import org.springframework.web.multipart.support.StandardMultipartHttpServletReq
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -29,8 +32,7 @@ public class UploadController {
     @Autowired
     private ResizeImageService resizeImageService;
 
-    private Future<List<String>> resultResizedFiles;
-    private boolean processResultAfterResize = false;
+    private Map<String, Future<String>> receivedRequests = new HashMap<>();
 
     @RequestMapping(method = POST)
     public String uploadFile(final HttpServletRequest httpServletRequest, final Model model) throws IOException{
@@ -39,8 +41,8 @@ public class UploadController {
                 new StandardMultipartHttpServletRequest(httpServletRequest);
         final InputStream inputStream = httpRequest.getFile("fileToUpload").getInputStream();
 
-        resultResizedFiles = resizeImageService.changeSize(inputStream, 1000, 1000, false);
-        processResultAfterResize = true;
+        Future<String> processingResult = resizeImageService.changeSize(inputStream, 1000, 1000, false);
+        receivedRequests.put(String.valueOf(Instant.now().getEpochSecond()), processingResult);
 
         model.addAttribute("info", "processing");
         return "upload";
@@ -54,20 +56,20 @@ public class UploadController {
     @RequestMapping(value = "/status", method = GET)
     public String getStatus(final Model model){
 
-        if (resultResizedFiles.isDone()){
-            if(processResultAfterResize){
-                try {
-                    resultResizedFiles.get().stream().forEach(file -> fileRepository.save(new UploadedFile(file)));
-                } catch (InterruptedException|ExecutionException e) {
-                    e.printStackTrace();
-                }finally {
-                    processResultAfterResize = false;
-                }
+        receivedRequests.forEach((uid, result) -> {
+            if (result.isDone()){
+                model.addAttribute("info", "processed " + fileRepository.count());
+            }else {
+                model.addAttribute("info", "processing");
+
             }
-            model.addAttribute("info", "processed" + fileRepository.count());
-        }else {
-            model.addAttribute("info", "processing");
-        }
+        });
+
+//        if (processingResult.isDone()){
+//            model.addAttribute("info", "processed " + fileRepository.count());
+//        }else {
+//            model.addAttribute("info", "processing");
+//        }
 
         return "upload";
     }
