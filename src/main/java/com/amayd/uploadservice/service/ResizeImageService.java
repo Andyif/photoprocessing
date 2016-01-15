@@ -2,6 +2,7 @@ package com.amayd.uploadservice.service;
 
 import com.amayd.uploadservice.modes.UploadedFile;
 import com.amayd.uploadservice.repository.FileRepository;
+import com.amayd.uploadservice.rest.model.ImageEntity;
 import com.amayd.uploadservice.tools.ThreadExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,9 +13,11 @@ import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 
 @Service
@@ -22,6 +25,28 @@ public class ResizeImageService {
 
     private static final Logger logger = LoggerFactory.getLogger(ResizeImageService.class);
 
+    private Map <Long, Future<String>> requestMap = new HashMap<>();
+    private Future<String> processResult;
+    private Long uid;
+
+    public Long resizeFromRest(final ImageEntity imageEntity) {
+        InputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(new File(imageEntity.getUrl()));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        if (inputStream != null){
+            processResult = changeSize(inputStream, imageEntity.getImageNewSize().getHeight(), imageEntity.getImageNewSize().getWidth(), false);
+            uid = Instant.now().getEpochSecond();
+        }
+
+        requestMap.put(uid, processResult);
+
+        return uid;
+
+    }
 
     @Autowired
     private FileRepository fileRepository;
