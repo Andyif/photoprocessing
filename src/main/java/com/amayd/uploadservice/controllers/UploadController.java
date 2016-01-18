@@ -41,7 +41,7 @@ public class UploadController {
                 new StandardMultipartHttpServletRequest(httpServletRequest);
         final InputStream inputStream = httpRequest.getFile("fileToUpload").getInputStream();
 
-        Future<String> processingResult = resizeImageService.changeSize(inputStream, 1000, 1000, false);
+        Future<String> processingResult = resizeImageService.changeSize(inputStream, 1000, 1000, false, "testImage");
         receivedRequests.put(String.valueOf(Instant.now().getEpochSecond()), processingResult);
 
         model.addAttribute("info", "processing");

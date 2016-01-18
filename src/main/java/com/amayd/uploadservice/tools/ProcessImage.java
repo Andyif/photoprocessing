@@ -36,13 +36,13 @@ public class ProcessImage {
         return scaledBI;
     }
 
-    public static String saveImage(BufferedImage outputBufferedImage){
+    public static String saveImage(BufferedImage outputBufferedImage, String newName){
         logger.debug("saving started");
         logger.debug("saving thread" + Thread.currentThread().getName());
 
         final File desktop = new File(System.getProperty("user.home"), "Desktop");
 
-        final File outPutFile = new File(desktop.getAbsolutePath() + "/" + Instant.now().getEpochSecond() + "_" + outputBufferedImage.getHeight() + ".png");
+        final File outPutFile = new File(desktop.getAbsolutePath() + "/" + newName + "_" + outputBufferedImage.getHeight() + ".png");
         final String path = outPutFile.getAbsolutePath().replace("\\", "/");
 
         try {

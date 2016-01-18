@@ -16,9 +16,9 @@ public class ProcessingResultAssembler extends ResourceAssemblerSupport<Processi
 
     @Override
     public ProcessingResultResource toResource(ProcessingResult processingResult) {
-        ProcessingResultResource resource = createResourceWithId(processingResult.getId(), processingResult);
+        ProcessingResultResource resource = createResourceWithId(processingResult.getUid(), processingResult);
         resource.setFinished(processingResult.getFinished());
-        resource.setImageEntity(processingResult.getImageEntity());
+        resource.setUid(processingResult.getUid());
         return resource;
     }
 }

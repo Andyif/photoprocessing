@@ -1,21 +1,22 @@
 package com.amayd.uploadservice.rest.resource;
 
-import com.amayd.uploadservice.rest.model.ImageNewSize;
 import org.springframework.hateoas.ResourceSupport;
 
 public class ImageEntityResource extends ResourceSupport{
 
     private String name;
     private String url;
-    private ImageNewSize imageNewSize;
+    private int height;
+    private int width;
 
     public ImageEntityResource() {
     }
 
-    public ImageEntityResource(String name, String url, ImageNewSize imageNewSize) {
+    public ImageEntityResource(String name, String url, Integer height, Integer width) {
         this.name = name;
         this.url = url;
-        this.imageNewSize = imageNewSize;
+        this.height = height;
+        this.width = width;
     }
 
     public void setName(String name) {
@@ -26,7 +27,11 @@ public class ImageEntityResource extends ResourceSupport{
         this.url = url;
     }
 
-    public void setImageNewSize(ImageNewSize imageNewSize) {
-        this.imageNewSize = imageNewSize;
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
     }
 }

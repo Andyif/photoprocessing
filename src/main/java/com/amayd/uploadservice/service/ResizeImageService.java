@@ -3,6 +3,9 @@ package com.amayd.uploadservice.service;
 import com.amayd.uploadservice.modes.UploadedFile;
 import com.amayd.uploadservice.repository.FileRepository;
 import com.amayd.uploadservice.rest.model.ImageEntity;
+import com.amayd.uploadservice.rest.model.ProcessingResult;
+import com.amayd.uploadservice.rest.repository.ImageEntityRepository;
+import com.amayd.uploadservice.rest.repository.ProcessingResultRepository;
 import com.amayd.uploadservice.tools.ThreadExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,41 +21,38 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 @Service
 public class ResizeImageService {
 
-    private static final Logger logger = LoggerFactory.getLogger(ResizeImageService.class);
+    @Autowired
+    ImageEntityRepository imageEntityRepository;
 
-    private Map <Long, Future<String>> requestMap = new HashMap<>();
-    private Future<String> processResult;
-    private Long uid;
-
-    public Long resizeFromRest(final ImageEntity imageEntity) {
-        InputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream(new File(imageEntity.getUrl()));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        if (inputStream != null){
-            processResult = changeSize(inputStream, imageEntity.getImageNewSize().getHeight(), imageEntity.getImageNewSize().getWidth(), false);
-            uid = Instant.now().getEpochSecond();
-        }
-
-        requestMap.put(uid, processResult);
-
-        return uid;
-
-    }
+    @Autowired
+    ProcessingResultRepository processingResultRepository;
 
     @Autowired
     private FileRepository fileRepository;
 
+    private static final Logger logger = LoggerFactory.getLogger(ResizeImageService.class);
+
+    private Map <Long, Future<String>> requestMap = new HashMap<>();
+
+    public InputStream getFileInputStream(final ImageEntity imageEntity) {
+//        imageEntityRepository.save(imageEntity);
+
+        try {
+            return new FileInputStream(new File(imageEntity.getUrl()));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     @Async
-    public Future<String> changeSize(final InputStream inputStream, int newHeight, int newWidth, boolean isTransparent) {
+    public Future<String> changeSize(final InputStream inputStream, int newHeight, int newWidth, boolean isTransparent, String newName) {
 
         logger.debug("Start changing an image");
 
@@ -62,7 +62,7 @@ public class ResizeImageService {
         List<String> images = null;
         try {
             inputBufferedImage = ImageIO.read(inputStream);
-            images = ThreadExecutor.resizeImagesConcurrently(inputBufferedImage, newHeight, newWidth, isTransparent);
+            images = ThreadExecutor.resizeImagesConcurrently(inputBufferedImage, newHeight, newWidth, isTransparent, newName);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -82,4 +82,30 @@ public class ResizeImageService {
         return "done";
     }
 
+    public ProcessingResult createProcessingResult(Future<String> resizeResult) {
+        Long uid = Instant.now().getEpochSecond();
+        requestMap.put(uid, resizeResult);
+        ProcessingResult processingResult = new ProcessingResult();
+        processingResult.setUid(uid);
+
+        processingResultRepository.save(processingResult);
+
+        return processingResult;
+    }
+
+    public ProcessingResult getProcessingStatus(Long uid) {
+        ProcessingResult processingResult = processingResultRepository.findOne(uid);
+        Future<String> imageProcessingResult = requestMap.get(uid);
+
+        try {
+            if(imageProcessingResult.isDone() || imageProcessingResult.get().equals("Done")){
+                 processingResult.setFinished(true);
+            }
+        } catch (InterruptedException|ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        processingResultRepository.save(processingResult);
+        return processingResult;
+    }
 }

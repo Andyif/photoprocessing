@@ -1,12 +1,26 @@
 package com.amayd.uploadservice.rest.model;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@Entity
+@XmlRootElement
 public class ImageEntity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private String name;
     private String url;
-    private ImageNewSize imageNewSize;
+    private int height;
+    private int width;
     private Boolean finished = false;
+
+    public ImageEntity() {
+    }
 
     public String getName() {
         return name;
@@ -24,14 +38,6 @@ public class ImageEntity {
         this.url = url;
     }
 
-    public ImageNewSize getImageNewSize() {
-        return imageNewSize;
-    }
-
-    public void setImageNewSize(ImageNewSize imageNewSize) {
-        this.imageNewSize = imageNewSize;
-    }
-
     public int getId() {
         return id;
     }
@@ -46,5 +52,21 @@ public class ImageEntity {
 
     public void setFinished(Boolean finished) {
         this.finished = finished;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
     }
 }

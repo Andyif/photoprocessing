@@ -14,7 +14,8 @@ public class ImageEntityAssembler extends ResourceAssemblerSupport<ImageEntity, 
     @Override
     public ImageEntityResource toResource(ImageEntity imageEntity) {
         ImageEntityResource resource = createResourceWithId(imageEntity.getId(), imageEntity);
-        resource.setImageNewSize(imageEntity.getImageNewSize());
+        resource.setHeight(imageEntity.getHeight());
+        resource.setWidth(imageEntity.getWidth());
         resource.setName(imageEntity.getName());
         resource.setUrl(imageEntity.getUrl());
         return resource;

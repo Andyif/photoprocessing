@@ -6,19 +6,22 @@ import org.springframework.hateoas.ResourceSupport;
 
 public class ProcessingResultResource extends ResourceSupport {
 
-    Long id;
-    ImageEntity imageEntity;
-    Boolean finished;
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setImageEntity(ImageEntity imageEntity) {
-        this.imageEntity = imageEntity;
-    }
+    private Boolean finished;
+    private Long uid;
 
     public void setFinished(Boolean finished) {
         this.finished = finished;
+    }
+
+    public void setUid(Long uid) {
+        this.uid = uid;
+    }
+
+    public Boolean getFinished() {
+        return finished;
+    }
+
+    public Long getUid() {
+        return uid;
     }
 }

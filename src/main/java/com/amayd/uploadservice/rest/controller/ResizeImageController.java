@@ -1,34 +1,42 @@
 package com.amayd.uploadservice.rest.controller;
 
 import com.amayd.uploadservice.rest.model.ImageEntity;
-import com.amayd.uploadservice.rest.repository.ImageEntityRepository;
-import com.amayd.uploadservice.rest.repository.ProcessingResultRepository;
+import com.amayd.uploadservice.rest.model.ProcessingResult;
+import com.amayd.uploadservice.rest.resource.ProcessingResultResource;
+import com.amayd.uploadservice.rest.resourceAssemblers.ProcessingResultAssembler;
 import com.amayd.uploadservice.service.ResizeImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+
+import java.io.InputStream;
+import java.util.concurrent.Future;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @Controller
-@RequestMapping("rest/upload")
+@RequestMapping("rest")
 public class ResizeImageController {
 
     @Autowired
     ResizeImageService resizeImageService;
 
-    @Autowired
-    ImageEntityRepository imageEntityRepository;
+    @RequestMapping(value = "upload", method = POST)
+    public HttpEntity<ProcessingResultResource> uploadImage(@RequestBody ImageEntity imageEntity){
+        InputStream fileInputStream = resizeImageService.getFileInputStream(imageEntity);
+        Future<String> imageResizeResult = resizeImageService.changeSize(fileInputStream,imageEntity.getHeight(), imageEntity.getWidth(), false, imageEntity.getName());
+        ProcessingResult processingResult = resizeImageService.createProcessingResult(imageResizeResult);
+        ProcessingResultResource processingResultResource = new ProcessingResultAssembler().toResource(processingResult);
+        return new HttpEntity<>(processingResultResource);
+    }
 
-    @Autowired
-    ProcessingResultRepository processingResultRepository;
-
-    @RequestMapping(method = POST)
-    public HttpEntity uploadImage(@RequestBody ImageEntity imageEntity){
-        imageEntityRepository.save(imageEntity);
-        resizeImageService.resizeFromRest(imageEntity);
+    @RequestMapping(value = "status/{uid}", method = GET)
+    public HttpEntity<ProcessingResultResource> getStatus(@PathVariable Long uid){
+        ProcessingResult processingResult = resizeImageService.getProcessingStatus(uid);
+        ProcessingResultResource processingResultResource = new ProcessingResultAssembler().toResource(processingResult);
+        return new HttpEntity<>(processingResultResource);
     }
 }

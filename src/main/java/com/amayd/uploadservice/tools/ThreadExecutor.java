@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 public class ThreadExecutor {
 
-    public static List<String> resizeImagesConcurrently(final BufferedImage inputBufferedImage, int newHeight, int newWidth, boolean isTransparent) {
+    public static List<String> resizeImagesConcurrently(final BufferedImage inputBufferedImage, int newHeight, int newWidth, boolean isTransparent, String newName) {
         final ExecutorService executorService = Executors.newWorkStealingPool();
 
         List<String> images = null;
@@ -22,12 +22,12 @@ public class ThreadExecutor {
                 () -> {
                     BufferedImage bufferedImage = ProcessImage.createResizedCopy(inputBufferedImage, newHeight, newWidth, isTransparent);
                     Thread.sleep(5000);
-                    return ProcessImage.saveImage(bufferedImage);
+                    return ProcessImage.saveImage(bufferedImage, newName);
                 },
                 () -> {
                     BufferedImage bufferedImage = ProcessImage.createResizedCopy(inputBufferedImage, newHeight * 2, newWidth * 2, isTransparent);
                     Thread.sleep(15000);
-                    return ProcessImage.saveImage(bufferedImage);
+                    return ProcessImage.saveImage(bufferedImage, newName);
                 },
 //                () -> {
 //                    BufferedImage bufferedImage = ProcessImage.createResizedCopy(inputBufferedImage, newHeight * 3, newWidth * 3, isTransparent);
@@ -47,7 +47,7 @@ public class ThreadExecutor {
                 () -> {
                     BufferedImage bufferedImage = ProcessImage.createResizedCopy(inputBufferedImage, newHeight * 6, newWidth * 6, isTransparent);
                     Thread.sleep(5000);
-                    return ProcessImage.saveImage(bufferedImage);
+                    return ProcessImage.saveImage(bufferedImage, newName);
                 }
         );
 
