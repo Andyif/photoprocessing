@@ -1,4 +1,4 @@
-package configuration;
+package uploadservice.configuration;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.orm.jpa.EntityScan;

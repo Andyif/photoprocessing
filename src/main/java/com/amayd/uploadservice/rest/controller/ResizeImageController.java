@@ -19,7 +19,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @Controller
 @RequestMapping("rest")
-public class ResizeImageController {
+public class ResizeImageController extends BaseController{
 
     @Autowired
     ResizeImageService resizeImageService;

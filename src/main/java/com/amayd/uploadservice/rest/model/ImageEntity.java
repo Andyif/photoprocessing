@@ -15,6 +15,7 @@ public class ImageEntity {
     private int id;
     private String name;
     private String url;
+    private String localFile;
     private int height;
     private int width;
     private Boolean finished = false;
@@ -68,5 +69,13 @@ public class ImageEntity {
 
     public void setWidth(int width) {
         this.width = width;
+    }
+
+    public String getLocalFile() {
+        return localFile;
+    }
+
+    public void setLocalFile(String localFile) {
+        this.localFile = localFile;
     }
 }

@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
@@ -41,13 +43,21 @@ public class ResizeImageService {
     private Map <Long, Future<String>> requestMap = new HashMap<>();
 
     public InputStream getFileInputStream(final ImageEntity imageEntity) {
-//        imageEntityRepository.save(imageEntity);
 
-        try {
-            return new FileInputStream(new File(imageEntity.getUrl()));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        if (imageEntity.getLocalFile() != null){
+            try {
+                return new FileInputStream(new File(imageEntity.getLocalFile()));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }else {
+            try {
+                return new URL(imageEntity.getUrl()).openStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+
         return null;
     }
 
