@@ -50,7 +50,7 @@ public class ResizeImageControllerTest extends AbstractControllerTest{
         imageEntity.setHeight(100);
         imageEntity.setWidth(100);
 
-        InputStream inputStream = new URL(url).openStream();
+//        InputStream inputStream = new URL(url).openStream();
 
         Future<String> imageResizingResult = new AsyncResult<>("done");
 
@@ -58,9 +58,7 @@ public class ResizeImageControllerTest extends AbstractControllerTest{
         processingResult.setUid(1L);
         processingResult.setFinished(true);
 
-        when(resizeImageService.getFileInputStream(imageEntity)).thenReturn(inputStream);
-        when(resizeImageService.changeSize(inputStream, 100, 100, false, "someName")).thenReturn(imageResizingResult);
-        when(resizeImageService.createProcessingResult(imageResizingResult)).thenReturn(processingResult);
+        when(resizeImageService.resizeImage(imageEntity)).thenReturn(processingResult);
 
         String inputString = mapToJson(imageEntity);
 

@@ -26,7 +26,7 @@ public class ControllersTest extends AbstractControllerTest{
 
     @Before
     public void setUp(){
-        setUp();
+        super.setUp();
     }
 
     @Test

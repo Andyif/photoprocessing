@@ -26,9 +26,8 @@ public class ResizeImageController extends BaseController{
 
     @RequestMapping(value = "upload", method = POST)
     public HttpEntity<ProcessingResultResource> uploadImage(@RequestBody ImageEntity imageEntity){
-        InputStream fileInputStream = resizeImageService.getFileInputStream(imageEntity);
-        Future<String> imageResizeResult = resizeImageService.changeSize(fileInputStream,imageEntity.getHeight(), imageEntity.getWidth(), false, imageEntity.getName());
-        ProcessingResult processingResult = resizeImageService.createProcessingResult(imageResizeResult);
+        logger.debug("Upload Image Controller");
+        ProcessingResult processingResult = resizeImageService.resizeImage(imageEntity);
         ProcessingResultResource processingResultResource = new ProcessingResultAssembler().toResource(processingResult);
         return new HttpEntity<>(processingResultResource);
     }

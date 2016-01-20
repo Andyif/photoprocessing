@@ -19,8 +19,7 @@ public class ProcessImage {
                                                   int scaledWidth, int scaledHeight,
                                                   boolean preserveAlpha)
     {
-        logger.debug("resizing started");
-        logger.debug("resizing thread" + Thread.currentThread().getName());
+        logger.debug("change size");
 
         final int imageType = preserveAlpha ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
         final BufferedImage scaledBI = new BufferedImage(scaledWidth, scaledHeight, imageType);
@@ -31,14 +30,13 @@ public class ProcessImage {
         g.drawImage(originalImage, 0, 0, scaledWidth, scaledHeight, null);
         g.dispose();
 
-        logger.debug("resizing finished");
+        logger.debug("change size finished");
 
         return scaledBI;
     }
 
     public static String saveImage(BufferedImage outputBufferedImage, String newName){
         logger.debug("saving started");
-        logger.debug("saving thread" + Thread.currentThread().getName());
 
         final File desktop = new File(System.getProperty("user.home"), "Desktop");
 

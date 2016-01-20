@@ -30,20 +30,17 @@ import java.util.concurrent.Future;
 public class ResizeImageService {
 
     @Autowired
-    ImageEntityRepository imageEntityRepository;
-
-    @Autowired
     ProcessingResultRepository processingResultRepository;
 
     @Autowired
-    private FileRepository fileRepository;
+    private ThreadExecutor threadExecutor;
 
     private static final Logger logger = LoggerFactory.getLogger(ResizeImageService.class);
 
     private Map <Long, Future<String>> requestMap = new HashMap<>();
 
-    public InputStream getFileInputStream(final ImageEntity imageEntity) {
-
+    private InputStream getFileInputStream(final ImageEntity imageEntity) {
+        logger.debug("get Input Stream");
         if (imageEntity.getLocalFile() != null){
             try {
                 return new FileInputStream(new File(imageEntity.getLocalFile()));
@@ -61,38 +58,7 @@ public class ResizeImageService {
         return null;
     }
 
-    @Async
-    public Future<String> changeSize(final InputStream inputStream, int newHeight, int newWidth, boolean isTransparent, String newName) {
-
-        logger.debug("Start changing an image");
-
-        final String result;
-
-        BufferedImage inputBufferedImage;
-        List<String> images = null;
-        try {
-            inputBufferedImage = ImageIO.read(inputStream);
-            images = ThreadExecutor.resizeImagesConcurrently(inputBufferedImage, newHeight, newWidth, isTransparent, newName);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        result = saveToDB(images);
-
-        logger.debug("Image changed");
-
-        return new AsyncResult<>(result);
-    }
-
-    private String saveToDB(List<String> locations){
-
-        logger.debug("Save to DB");
-
-        locations.stream().forEach( newImageLocation -> fileRepository.save(new UploadedFile(newImageLocation)));
-        return "done";
-    }
-
-    public ProcessingResult createProcessingResult(Future<String> resizeResult) {
+    private ProcessingResult createProcessingResult(final Future<String> resizeResult) {
         Long uid = Instant.now().getEpochSecond();
         requestMap.put(uid, resizeResult);
         ProcessingResult processingResult = new ProcessingResult();
@@ -100,22 +66,39 @@ public class ResizeImageService {
 
         processingResultRepository.save(processingResult);
 
+        logger.debug("======> result <====== " + resizeResult.isDone());
+
         return processingResult;
     }
 
-    public ProcessingResult getProcessingStatus(Long uid) {
+    public ProcessingResult getProcessingStatus(final Long uid) {
+        logger.debug("get processing results");
         ProcessingResult processingResult = processingResultRepository.findOne(uid);
         Future<String> imageProcessingResult = requestMap.get(uid);
 
+        logger.debug("======> Is Done <====== " + imageProcessingResult.isDone());
+
         try {
-            if(imageProcessingResult.isDone() || imageProcessingResult.get().equals("Done")){
+            if(imageProcessingResult.isDone() && imageProcessingResult.get().equals("done")){
+                logger.debug("======> Is Done <====== " + imageProcessingResult.isDone());
+                logger.debug("======> Is Done <====== " + imageProcessingResult.get());
+
+                logger.debug("processing finished");
                  processingResult.setFinished(true);
             }
         } catch (InterruptedException|ExecutionException e) {
             e.printStackTrace();
         }
 
-        processingResultRepository.save(processingResult);
+//        processingResultRepository.save(processingResult);
         return processingResult;
+    }
+
+    public ProcessingResult resizeImage(final ImageEntity imageEntity) {
+        logger.debug("Start resizing");
+        InputStream inputStream = getFileInputStream(imageEntity);
+        Future<String> resizeResult = threadExecutor.changeSize(inputStream, imageEntity.getHeight(), imageEntity.getWidth(), false, imageEntity.getName());
+        logger.debug("return result");
+        return createProcessingResult(resizeResult);
     }
 }
