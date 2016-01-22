@@ -1,4 +1,4 @@
-package rest.integration;
+package testRestApi.integration;
 
 import com.amayd.uploadservice.rest.controller.BaseController;
 import com.fasterxml.jackson.core.JsonProcessingException;

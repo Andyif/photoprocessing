@@ -1,10 +1,9 @@
-package rest.integration;
+package testRestApi.integration;
 
 import com.amayd.uploadservice.rest.controller.ResizeImageController;
 import com.amayd.uploadservice.rest.model.ImageEntity;
 import com.amayd.uploadservice.rest.model.ProcessingResult;
 import com.amayd.uploadservice.service.ResizeImageService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,8 +15,6 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.InputStream;
-import java.net.URL;
 import java.util.concurrent.Future;
 
 import static org.mockito.Mockito.when;
@@ -65,11 +62,13 @@ public class ResizeImageControllerTest extends AbstractControllerTest{
         MvcResult result = mockMvc.perform(post("/rest/upload").contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON).content(inputString)).andReturn();
 
-        String content = result.getResponse().getContentAsString();
+        String content = result.getResponse().getContentAsString().trim();
         int status = result.getResponse().getStatus();
 
         Assert.assertEquals("Wrong status", 200, status);
-        Assert.assertTrue("empty body",content.trim().length() > 0);
+        Assert.assertTrue("empty body",content.length() > 0);
+
+        System.out.println(content);
 
     }
 }

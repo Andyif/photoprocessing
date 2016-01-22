@@ -1,4 +1,4 @@
-package rest.configuration;
+package testRestApi.configuration;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.orm.jpa.EntityScan;

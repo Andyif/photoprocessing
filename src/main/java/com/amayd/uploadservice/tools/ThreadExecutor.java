@@ -13,6 +13,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -37,41 +38,52 @@ public class ThreadExecutor {
 //        InputStream concurrentInputStream1 = inputStream;
 //        BufferedImage inputBufferedImage = ImageIO.read(inputStream);
 
-        final List<Callable<String>> callables = Arrays.asList(
-                () -> {
-                    BufferedImage bufferedImage = ProcessImage.createResizedCopy(inputBufferedImage, newHeight, newWidth, isTransparent);
-                    Thread.sleep(60000);
-                    return ProcessImage.saveImage(bufferedImage, newName);
-                },
-                () -> {
-                    BufferedImage bufferedImage = ProcessImage.createResizedCopy(inputBufferedImage, newHeight * 2, newWidth * 2, isTransparent);
-                    Thread.sleep(70000);
-                    return ProcessImage.saveImage(bufferedImage, newName);
-                },
+        List<Callable<String>> callables1 = new ArrayList<>();
+        for (int i = 0; i < 6; i++){
+            final int finalI = i;
+            callables1.add(() -> {
+                logger.debug("image " + finalI);
+                BufferedImage bufferedImage = ProcessImage.createResizedCopy(inputBufferedImage, newHeight * (finalI + 1) , newWidth * (finalI + 1), isTransparent, finalI);
+                Thread.sleep(30000);
+                return ProcessImage.saveImage(bufferedImage, newName, finalI);
+            });
+        }
+
+//        final List<Callable<String>> callables = Arrays.asList(
+//                () -> {
+//                    BufferedImage bufferedImage = ProcessImage.createResizedCopy(inputBufferedImage, newHeight, newWidth, isTransparent);
+//                    Thread.sleep(30000);
+//                    return ProcessImage.saveImage(bufferedImage, newName);
+//                },
+//                () -> {
+//                    BufferedImage bufferedImage = ProcessImage.createResizedCopy(inputBufferedImage, newHeight * 2, newWidth * 2, isTransparent);
+//                    Thread.sleep(30000);
+//                    return ProcessImage.saveImage(bufferedImage, newName);
+//                },
 //                () -> {
 //                    BufferedImage bufferedImage = ProcessImage.createResizedCopy(inputBufferedImage, newHeight * 3, newWidth * 3, isTransparent);
-//                    Thread.sleep(15000);
-//                    return ProcessImage.saveImage(bufferedImage);
+//                    Thread.sleep(30000);
+//                    return ProcessImage.saveImage(bufferedImage, newName);
 //                },
 //                () -> {
 //                    BufferedImage bufferedImage = ProcessImage.createResizedCopy(inputBufferedImage, newHeight * 4, newWidth * 4, isTransparent);
-//                    Thread.sleep(5000);
-//                    return ProcessImage.saveImage(bufferedImage);
+//                    Thread.sleep(3000);
+//                    return ProcessImage.saveImage(bufferedImage, newName);
 //                },
 //                () -> {
 //                    BufferedImage bufferedImage = ProcessImage.createResizedCopy(inputBufferedImage, newHeight * 5, newWidth * 5, isTransparent);
-//                    Thread.sleep(5000);
-//                    return ProcessImage.saveImage(bufferedImage);
+//                    Thread.sleep(3000);
+//                    return ProcessImage.saveImage(bufferedImage, newName);
 //                },
-                () -> {
-                    BufferedImage bufferedImage = ProcessImage.createResizedCopy(inputBufferedImage, newHeight * 6, newWidth * 6, isTransparent);
-                    Thread.sleep(60000);
-                    return ProcessImage.saveImage(bufferedImage, newName);
-                }
-        );
+//                () -> {
+//                    BufferedImage bufferedImage = ProcessImage.createResizedCopy(inputBufferedImage, newHeight * 6, newWidth * 6, isTransparent);
+//                    Thread.sleep(45000);
+//                    return ProcessImage.saveImage(bufferedImage, newName);
+//                }
+//        );
 
         try {
-            images = executorService.invokeAll(callables).stream().map(future -> {
+            images = executorService.invokeAll(callables1).stream().map(future -> {
                 try {
                     return future.get();
                 }
@@ -88,7 +100,7 @@ public class ThreadExecutor {
     @Async
     public Future<String> changeSize(final InputStream inputStream, int newHeight, int newWidth, boolean isTransparent, String newName) {
 
-        logger.debug("Start changing an image");
+        logger.debug("=================== Start changing an image ===================");
 
         final String result;
 
@@ -96,14 +108,14 @@ public class ThreadExecutor {
         List<String> images = null;
         try {
             inputBufferedImage = ImageIO.read(inputStream);
-            images = ThreadExecutor.resizeImagesConcurrently(inputBufferedImage, newHeight, newWidth, isTransparent, newName);
+            images = resizeImagesConcurrently(inputBufferedImage, newHeight, newWidth, isTransparent, newName);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         result = saveToDB(images);
 
-        logger.debug("Image changed");
+        logger.debug("=================== Image changed ===================");
 
         return new AsyncResult<>(result);
     }

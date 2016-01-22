@@ -17,10 +17,8 @@ public class ProcessImage {
 
     public static BufferedImage createResizedCopy(final Image originalImage,
                                                   int scaledWidth, int scaledHeight,
-                                                  boolean preserveAlpha)
+                                                  boolean preserveAlpha, int image)
     {
-        logger.debug("change size");
-
         final int imageType = preserveAlpha ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
         final BufferedImage scaledBI = new BufferedImage(scaledWidth, scaledHeight, imageType);
         final Graphics2D g = scaledBI.createGraphics();
@@ -30,14 +28,12 @@ public class ProcessImage {
         g.drawImage(originalImage, 0, 0, scaledWidth, scaledHeight, null);
         g.dispose();
 
-        logger.debug("change size finished");
+        logger.debug("resized image image " + image);
 
         return scaledBI;
     }
 
-    public static String saveImage(BufferedImage outputBufferedImage, String newName){
-        logger.debug("saving started");
-
+    public static String saveImage(BufferedImage outputBufferedImage, String newName, int image){
         final File desktop = new File(System.getProperty("user.home"), "Desktop");
 
         final File outPutFile = new File(desktop.getAbsolutePath() + "/" + newName + "_" + outputBufferedImage.getHeight() + ".png");
@@ -49,7 +45,7 @@ public class ProcessImage {
             e.printStackTrace();
         }
 
-        logger.debug("saving finished");
+        logger.debug("saved image image " + image);
 
         return path;
     }

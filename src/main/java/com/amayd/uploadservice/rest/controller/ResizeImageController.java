@@ -12,9 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.io.InputStream;
-import java.util.concurrent.Future;
-
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @Controller
@@ -24,8 +21,10 @@ public class ResizeImageController extends BaseController{
     @Autowired
     ResizeImageService resizeImageService;
 
+
     @RequestMapping(value = "upload", method = POST)
     public HttpEntity<ProcessingResultResource> uploadImage(@RequestBody ImageEntity imageEntity){
+        System.out.println(resizeImageService);
         logger.debug("Upload Image Controller");
         ProcessingResult processingResult = resizeImageService.resizeImage(imageEntity);
         ProcessingResultResource processingResultResource = new ProcessingResultAssembler().toResource(processingResult);
@@ -34,7 +33,7 @@ public class ResizeImageController extends BaseController{
 
     @RequestMapping(value = "status/{uid}", method = GET)
     public HttpEntity<ProcessingResultResource> getStatus(@PathVariable Long uid){
-        ProcessingResult processingResult = resizeImageService.getProcessingStatus(uid);
+        ProcessingResult processingResult = resizeImageService.getResizeImageStatus(uid);
         ProcessingResultResource processingResultResource = new ProcessingResultAssembler().toResource(processingResult);
         return new HttpEntity<>(processingResultResource);
     }

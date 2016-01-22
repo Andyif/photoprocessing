@@ -78,4 +78,31 @@ public class ImageEntity {
     public void setLocalFile(String localFile) {
         this.localFile = localFile;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ImageEntity that = (ImageEntity) o;
+
+        if (height != that.height) return false;
+        if (width != that.width) return false;
+        if (!name.equals(that.name)) return false;
+        if (url != null ? !url.equals(that.url) : that.url != null) return false;
+        if (localFile != null ? !localFile.equals(that.localFile) : that.localFile != null) return false;
+        return finished.equals(that.finished);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name.hashCode();
+        result = 31 * result + (url != null ? url.hashCode() : 0);
+        result = 31 * result + (localFile != null ? localFile.hashCode() : 0);
+        result = 31 * result + height;
+        result = 31 * result + width;
+        result = 31 * result + finished.hashCode();
+        return result;
+    }
 }

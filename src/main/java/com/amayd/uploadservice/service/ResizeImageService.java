@@ -66,24 +66,16 @@ public class ResizeImageService {
 
         processingResultRepository.save(processingResult);
 
-        logger.debug("======> result <====== " + resizeResult.isDone());
-
         return processingResult;
     }
 
-    public ProcessingResult getProcessingStatus(final Long uid) {
+    public ProcessingResult getResizeImageStatus(final Long uid) {
         logger.debug("get processing results");
         ProcessingResult processingResult = processingResultRepository.findOne(uid);
         Future<String> imageProcessingResult = requestMap.get(uid);
 
-        logger.debug("======> Is Done <====== " + imageProcessingResult.isDone());
-
         try {
             if(imageProcessingResult.isDone() && imageProcessingResult.get().equals("done")){
-                logger.debug("======> Is Done <====== " + imageProcessingResult.isDone());
-                logger.debug("======> Is Done <====== " + imageProcessingResult.get());
-
-                logger.debug("processing finished");
                  processingResult.setFinished(true);
             }
         } catch (InterruptedException|ExecutionException e) {
@@ -95,10 +87,10 @@ public class ResizeImageService {
     }
 
     public ProcessingResult resizeImage(final ImageEntity imageEntity) {
-        logger.debug("Start resizing");
+        logger.debug("=================Service in==================");
         InputStream inputStream = getFileInputStream(imageEntity);
         Future<String> resizeResult = threadExecutor.changeSize(inputStream, imageEntity.getHeight(), imageEntity.getWidth(), false, imageEntity.getName());
-        logger.debug("return result");
+        logger.debug("=================Service out==================");
         return createProcessingResult(resizeResult);
     }
 }
