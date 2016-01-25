@@ -58,13 +58,17 @@ public class ControllersTest extends AbstractControllerTest{
 
     @Test
     public void getTest() throws Exception {
-        MvcResult result = this.mockMvc.perform(get("/rest/status/123")).andReturn();
+        String uid = "123";
+        String expectedErrorMsg = "No such request with UID = " + uid;
+
+        MvcResult result = this.mockMvc.perform(get("/rest/status/" + uid)).andReturn();
 
         String content = result.getResponse().getContentAsString();
         int status = result.getResponse().getStatus();
+        String actualErrorMsg = result.getResponse().getErrorMessage();
 
-        Assert.assertEquals("Wrong status", 200, status);
-
+        Assert.assertEquals("Wrong status", 400, status);
+        Assert.assertEquals(expectedErrorMsg, actualErrorMsg);
     }
 
 }

@@ -23,6 +23,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -72,14 +73,12 @@ public class ResizeImageService {
     public ProcessingResult getResizeImageStatus(final Long uid) {
         logger.debug("get processing results");
         ProcessingResult processingResult = processingResultRepository.findOne(uid);
-        Future<String> imageProcessingResult = requestMap.get(uid);
+        Optional<Future<String>> imageProcessingResult = Optional.ofNullable(requestMap.get(uid));
 
-        try {
-            if(imageProcessingResult.isDone() && imageProcessingResult.get().equals("done")){
-                 processingResult.setFinished(true);
+        if (imageProcessingResult.isPresent()){
+            if(imageProcessingResult.get().isDone() && imageProcessingResult.get().equals("done")){
+                processingResult.setFinished(true);
             }
-        } catch (InterruptedException|ExecutionException e) {
-            e.printStackTrace();
         }
 
 //        processingResultRepository.save(processingResult);
