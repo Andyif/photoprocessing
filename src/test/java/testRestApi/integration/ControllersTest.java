@@ -12,23 +12,21 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MvcResult;
 
-import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = {Application.class})
 @WebAppConfiguration
-public class ControllersTest extends AbstractControllerTest{
+public class ControllersTest extends AbstractControllerTest {
 
     @Before
-    public void setUp(){
+    public void setUp() {
         super.setUp();
     }
 
     @Test
-    public void uploadTest() throws Exception {
+    public void upload_get_validTest() throws Exception {
         ImageEntity imageEntity = new ImageEntity();
         imageEntity.setName("integrationTest");
         imageEntity.setUrl("https://www.google.com.ua/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png");
@@ -44,20 +42,17 @@ public class ControllersTest extends AbstractControllerTest{
         int status = result.getResponse().getStatus();
 
         Assert.assertEquals("Wrong status", 200, status);
-        Assert.assertTrue("empty body",content.length() > 0);
-        System.out.println("CONTENT - " + content);
-        Thread.sleep(60000);
+        Assert.assertTrue("empty body", content.length() > 0);
+        Thread.sleep(10000);
 
-        String currentUid = content.substring(24,34);
-        System.out.println(currentUid);
+        String currentUid = content.substring(24, 34);
 
         result = mockMvc.perform(get("/rest/status/" + currentUid)).andReturn();
         content = result.getResponse().getContentAsString();
-        System.out.println("CONTENT - " + content);
     }
 
     @Test
-    public void getTest() throws Exception {
+    public void get_invalidTestTest() throws Exception {
         String uid = "123";
         String expectedErrorMsg = "No such request with UID = " + uid;
 

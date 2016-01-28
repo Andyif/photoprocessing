@@ -44,7 +44,7 @@ public class ThreadExecutor {
             callables1.add(() -> {
                 logger.debug("image " + finalI);
                 BufferedImage bufferedImage = ProcessImage.createResizedCopy(inputBufferedImage, newHeight * (finalI + 1) , newWidth * (finalI + 1), isTransparent, finalI);
-                Thread.sleep(30000);
+//                Thread.sleep(30000);
                 return ProcessImage.saveImage(bufferedImage, newName, finalI);
             });
         }

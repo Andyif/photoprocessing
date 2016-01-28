@@ -6,6 +6,7 @@ import com.amayd.uploadservice.rest.resource.ProcessingResultResource;
 import com.amayd.uploadservice.rest.resourceAssemblers.ProcessingResultAssembler;
 import com.amayd.uploadservice.service.ResizeImageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -35,7 +36,6 @@ public class ResizeImageController extends BaseController{
 
     @RequestMapping(value = "upload", method = POST)
     public HttpEntity<ProcessingResultResource> uploadImage(@RequestBody ImageEntity imageEntity){
-        System.out.println(resizeImageService);
         logger.debug("Upload Image Controller");
         ProcessingResult processingResult = resizeImageService.resizeImage(imageEntity);
         ProcessingResultResource processingResultResource = new ProcessingResultAssembler().toResource(processingResult);

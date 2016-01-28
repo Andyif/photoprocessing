@@ -19,9 +19,9 @@ import java.util.concurrent.Future;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
-@Transactional
-public class ResizeImageControllerTest extends AbstractControllerTest{
+public class MockedControllerTest extends AbstractControllerTest{
 
     @Mock
     private ResizeImageService resizeImageService;
@@ -37,7 +37,7 @@ public class ResizeImageControllerTest extends AbstractControllerTest{
     }
 
     @Test
-    public void firstTest() throws Exception {
+    public void mockedPostTest() throws Exception {
 
         String url = "https://www.google.com.ua/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png";
 
@@ -67,8 +67,22 @@ public class ResizeImageControllerTest extends AbstractControllerTest{
 
         Assert.assertEquals("Wrong status", 200, status);
         Assert.assertTrue("empty body",content.length() > 0);
+    }
 
-        System.out.println(content);
+    @Test
+    public void mockedGetTest() throws Exception {
 
+        final Long uid = 123L;
+
+        ProcessingResult processingResult = new ProcessingResult();
+        processingResult.setUid(uid);
+        processingResult.setFinished(true);
+
+        when(resizeImageService.getResizeImageStatus(uid)).thenReturn(processingResult);
+
+        MvcResult result = mockMvc.perform(get("/rest/status/" +uid)).andReturn();
+
+        Assert.assertEquals("Wrong status", 200, result.getResponse().getStatus());
+        Assert.assertEquals("empty body", result.getResponse().getContentAsString().length());
     }
 }
